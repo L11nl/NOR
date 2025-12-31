@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>متجر الاشتراكات | الإصدار V5</title>
+    <title>substor100 | الإصدار V5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -98,7 +98,7 @@
                 <div class="absolute top-0 left-0 w-full h-3 bg-blue-600"></div>
                 
                 <div class="text-center mb-6 pt-4">
-                    <h3 class="text-2xl font-black text-blue-600 tracking-tighter uppercase">متجر الاشتراكات</h3>
+                    <h3 class="text-3xl font-black text-blue-600 tracking-tighter">substor100</h3>
                     <p class="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em]">Official Subscription Receipt</p>
                 </div>
                 
@@ -112,7 +112,7 @@
 
                 <div class="flex items-center justify-center gap-2 bg-slate-50 p-3 rounded-2xl">
                     <svg class="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.607-1.308 1.266-.058 1.646-.07 4.85-.07zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.668-.072-4.948-.197-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                    <span class="text-[10px] font-black tracking-tighter text-slate-700 uppercase">Instagram: substor100</span>
+                    <span class="text-[10px] font-black tracking-tighter text-slate-700">INSTAGRAM: substor100</span>
                 </div>
             </div>
             
@@ -126,7 +126,7 @@
     </div>
 
     <script>
-        const STORAGE_KEY = "SUBS_STORE_MANAGER_V5";
+        const STORAGE_KEY = "SUBSTOR100_PRO_V5_STABLE";
         let clients = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let selectedService = "";
         let selectedPaid = null;
@@ -276,9 +276,9 @@
         async function shareReceiptImage() {
             const canvas = await html2canvas(el('printableReceipt'), { scale: 3, useCORS: true });
             canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'Receipt.png', { type: 'image/png' });
+                const file = new File([blob], 'substor100_Receipt.png', { type: 'image/png' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'وصل اشتراك' });
+                    await navigator.share({ files: [file], title: 'وصل اشتراك substor100' });
                 } else {
                     downloadReceipt();
                 }
@@ -295,7 +295,7 @@
         async function downloadReceipt() {
             const canvas = await html2canvas(el('printableReceipt'), { scale: 3 });
             const a = document.createElement('a');
-            a.download = `Receipt-${currentR.name}.png`;
+            a.download = `substor100-${currentR.name}.png`;
             a.href = canvas.toDataURL();
             a.click();
         }
