@@ -2,139 +2,134 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>substor100 | V6.5 Speed Edition</title>
+    <title>substor100 | الإصدار V5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --accent: #3b82f6; }
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        
-        /* إجبار الأرقام على التنسيق الإنجليزي */
-        .eng-num { font-family: 'Inter', sans-serif !important; font-variant-numeric: tabular-nums; }
-        
-        .glass-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05); }
-        .tab-active { border-bottom: 3px solid var(--accent); color: var(--accent); background: rgba(59, 130, 246, 0.05); }
-        .input-field { background: #1e293b; border: 1px solid #334155; color: white; transition: 0.2s; }
-        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-        
-        .fade-in { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* تنسيق الوصل الديناميكي */
-        .receipt-paid { background: #ffffff; border: 3px solid #22c55e; }
-        .receipt-unpaid { background: #ffffff; border: 3px solid #ef4444; }
+        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .input-field { background: #1e293b; border: 1px solid #334155; transition: all 0.3s; color: white; }
+        .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+        .btn-active-paid { background-color: #16a34a !important; border-color: #22c55e !important; color: white !important; }
+        .btn-active-unpaid { background-color: #dc2626 !important; border-color: #ef4444 !important; color: white !important; }
+        .btn-choice { border: 1px solid #334155; transition: 0.2s; background: #0f172a; }
+        .btn-selected { background-color: #3b82f6 !important; color: white !important; }
     </style>
 </head>
-<body>
+<body class="text-slate-200">
 
-    <nav class="flex bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
-        <button onclick="showTab('add')" id="tabAdd" class="flex-1 p-4 font-bold tab-active text-xs">➕ إضافة</button>
-        <button onclick="showTab('list')" id="tabList" class="flex-1 p-4 font-bold text-xs">🔍 المشتركين</button>
-        <button onclick="openStats()" class="flex-1 p-4 font-bold text-xs text-yellow-500">📊 الإحصائيات</button>
+    <div id="expiryAlert" class="hidden bg-red-600 text-white p-2 text-center text-xs font-bold sticky top-0 z-50 animate-pulse">
+        ⚠️ تنبيه: توجد اشتراكات منتهية!
+    </div>
+
+    <nav class="flex bg-slate-800 border-b border-slate-700 sticky top-0 z-40">
+        <button onclick="showTab('add')" id="tabAdd" class="flex-1 p-4 font-bold tab-active text-sm">➕ إضافة زبون</button>
+        <button onclick="showTab('list')" id="tabList" class="flex-1 p-4 font-bold text-sm">🔍 قائمة المشتركين</button>
     </nav>
 
-    <div class="p-4 max-w-xl mx-auto">
-        <div id="viewAdd" class="space-y-4 fade-in">
-            <div class="glass-card p-6 rounded-[2rem] space-y-4 shadow-xl">
-                <input id="name" class="input-field p-4 rounded-xl w-full" placeholder="اسم الزبون">
+    <div class="p-4 max-w-2xl mx-auto">
+
+        <div id="viewAdd" class="space-y-4">
+            <div class="glass-card p-6 rounded-3xl space-y-4 shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="name" class="input-field p-3 rounded-xl w-full" placeholder="اسم الزبون">
+                    <input id="email" type="email" class="input-field p-3 rounded-xl w-full" placeholder="البريد الإلكتروني (اختياري)">
+                </div>
                 
                 <div class="flex gap-2">
-                    <span class="bg-slate-700 p-4 rounded-xl text-slate-400 text-sm flex items-center eng-num font-bold">+964</span>
-                    <input id="phone" type="tel" class="input-field p-4 rounded-xl w-full eng-num" placeholder="77XXXXXXXX">
+                    <span class="bg-slate-700 p-3 rounded-xl text-slate-400 text-sm flex items-center font-bold">964+</span>
+                    <input id="phone" type="tel" class="input-field p-3 rounded-xl w-full font-mono" placeholder="77XXXXXXXX">
                 </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="servicesGrid">
-                    <button onclick="setService(this, 'Canva Pro')" class="bg-slate-800 p-2 rounded-xl text-[10px] border border-slate-700">Canva</button>
-                    <button onclick="setService(this, 'ChatGPT')" class="bg-slate-800 p-2 rounded-xl text-[10px] border border-slate-700">ChatGPT</button>
-                    <button onclick="setService(this, 'CapCut')" class="bg-slate-800 p-2 rounded-xl text-[10px] border border-slate-700">CapCut</button>
-                    <button onclick="toggleCustomService()" class="bg-slate-800 p-2 rounded-xl text-[10px] border border-slate-700">أخرى</button>
-                </div>
-                <input id="customService" class="hidden input-field p-4 rounded-xl w-full" placeholder="اسم الخدمة...">
-
-                <input id="price" type="number" class="input-field p-4 rounded-xl w-full eng-num font-bold text-blue-400" placeholder="0.00">
 
                 <div class="space-y-2">
-                    <label class="text-[10px] text-slate-500 uppercase font-bold mr-1">مدة الاشتراك:</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="calcEndDate(7)" class="bg-slate-800 p-2 rounded-lg text-[10px] border border-slate-700 hover:bg-slate-700">أسبوع</button>
-                        <button onclick="calcEndDate(30)" class="bg-slate-800 p-2 rounded-lg text-[10px] border border-slate-700 hover:bg-slate-700">شهر</button>
-                        <button onclick="calcEndDate(90)" class="bg-slate-800 p-2 rounded-lg text-[10px] border border-slate-700 hover:bg-slate-700">3 أشهر</button>
-                        <button onclick="calcEndDate(365)" class="bg-slate-800 p-2 rounded-lg text-[10px] border border-slate-700 hover:bg-slate-700">سنة</button>
+                    <label class="text-[10px] text-slate-400 uppercase tracking-tighter">نوع الخدمة:</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="servicesGrid">
+                        <button onclick="setService(this, 'Canva Pro')" class="btn-choice p-2 rounded-xl text-xs">Canva Pro</button>
+                        <button onclick="setService(this, 'ChatGPT')" class="btn-choice p-2 rounded-xl text-xs">ChatGPT</button>
+                        <button onclick="setService(this, 'CapCut')" class="btn-choice p-2 rounded-xl text-xs">CapCut</button>
+                        <button onclick="setService(this, 'Gemini')" class="btn-choice p-2 rounded-xl text-xs">Gemini</button>
+                        <button onclick="toggleCustomService(true)" id="otherBtn" class="btn-choice p-2 rounded-xl text-xs">خدمة أخرى +</button>
                     </div>
-                    <input type="date" id="expDate" class="input-field p-4 rounded-xl w-full eng-num text-sm">
+                    <input id="customService" class="hidden input-field p-3 rounded-xl w-full mt-2" placeholder="اكتب اسم الخدمة المخصصة...">
+                </div>
+
+                <div class="space-y-2 border-t border-slate-700/50 pt-3">
+                    <label class="text-[10px] text-slate-400 uppercase tracking-tighter">مدة الاشتراك:</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="durationGrid">
+                        <button onclick="calcEndDate(this, 7)" class="btn-choice p-2 rounded-lg text-[10px]">أسبوع</button>
+                        <button onclick="calcEndDate(this, 30)" class="btn-choice p-2 rounded-lg text-[10px]">شهر</button>
+                        <button onclick="calcEndDate(this, 90)" class="btn-choice p-2 rounded-lg text-[10px]">3 أشهر</button>
+                        <button onclick="calcEndDate(this, 180)" class="btn-choice p-2 rounded-lg text-[10px]">6 أشهر</button>
+                        <button onclick="calcEndDate(this, 365)" class="btn-choice p-2 rounded-lg text-[10px]">سنة</button>
+                    </div>
+                    <input type="date" id="expDate" class="input-field p-3 rounded-xl w-full mt-2 text-sm">
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
-                    <input id="insta" class="input-field p-3 rounded-xl w-full text-xs eng-num" placeholder="يوزر انستغرام">
-                    <button id="btnPaidMain" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700 font-bold" onclick="setPaid(!selectedPaid)">الحالة ❌</button>
+                    <input id="insta" class="input-field p-3 rounded-xl w-full text-xs" placeholder="يوزر انستغرام">
+                    <input id="link" class="input-field p-3 rounded-xl w-full text-xs" placeholder="رابط حساب">
                 </div>
 
-                <button id="mainBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-transform active:scale-95" onclick="saveClient()">💾 حفظ البيانات</button>
+                <div class="flex gap-2">
+                    <button id="btnPaid" class="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700 text-sm font-bold" onclick="setPaid(true)">✅ مدفوع</button>
+                    <button id="btnUnpaid" class="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700 text-sm font-bold" onclick="setPaid(false)">❌ غير مدفوع</button>
+                </div>
+
+                <textarea id="notes" class="input-field p-3 rounded-xl w-full h-16 text-sm" placeholder="ملاحظات إضافية لك..."></textarea>
+
+                <button id="mainBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all" onclick="saveClient()">💾 حفظ بيانات الزبون</button>
             </div>
         </div>
 
-        <div id="viewList" class="hidden space-y-4 fade-in">
-            <input id="search" oninput="render()" class="input-field p-4 rounded-2xl w-full" placeholder="🔍 بحث سريع...">
-            <div id="clientsList" class="space-y-4"></div>
-        </div>
-    </div>
-
-    <div id="statsModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-6 backdrop-blur-md">
-        <div class="glass-card w-full max-w-sm p-8 rounded-[2.5rem] text-center border-blue-500/20">
-            <h2 class="text-2xl font-black mb-6 text-blue-400">📊 التقرير المالي</h2>
-            <div class="space-y-3 text-right">
-                <div class="bg-green-500/10 p-4 rounded-xl border border-green-500/20 flex justify-between">
-                    <span class="text-xs text-green-400 font-bold">المدفوع:</span>
-                    <span id="totalPaid" class="eng-num font-black text-white text-lg">0</span>
-                </div>
-                <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20 flex justify-between">
-                    <span class="text-xs text-red-400 font-bold">الديون:</span>
-                    <span id="totalUnpaid" class="eng-num font-black text-white text-lg">0</span>
-                </div>
-                <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 flex justify-between">
-                    <span class="text-xs text-blue-400 font-bold">المشتركين:</span>
-                    <span id="totalCount" class="eng-num font-black text-white text-lg">0</span>
-                </div>
+        <div id="viewList" class="hidden space-y-4">
+            <div class="relative">
+                <input id="search" oninput="render()" class="input-field p-4 pr-12 rounded-2xl w-full shadow-lg" placeholder="بحث بالاسم أو الرقم أو الإيميل...">
+                <span class="absolute right-4 top-4 opacity-30">🔍</span>
             </div>
-            <button onclick="el('statsModal').classList.add('hidden')" class="mt-6 w-full bg-slate-700 p-3 rounded-xl font-bold">إغلاق</button>
+            <div id="clientsList" class="space-y-4 pb-10"></div>
         </div>
     </div>
 
     <div id="receiptModal" class="fixed inset-0 bg-black/95 hidden z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-xs">
-            <div id="printableReceipt" class="p-8 rounded-[2.5rem] text-slate-900 text-right shadow-2xl transition-all">
-                <div class="text-center mb-4 border-b pb-4">
-                    <h3 class="text-4xl font-black text-blue-600 tracking-tighter eng-num">substor100</h3>
+            <div id="printableReceipt" class="bg-white p-6 rounded-[2.5rem] text-slate-900 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-3 bg-blue-600"></div>
+                
+                <div class="text-center mb-6 pt-4">
+                    <h3 class="text-3xl font-black text-blue-600 tracking-tighter">substor100</h3>
+                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em]">Official Subscription Receipt</p>
                 </div>
-                <div class="space-y-3 py-2 font-bold text-sm">
-                    <div class="flex justify-between"><span>الزبون:</span> <span id="rName"></span></div>
-                    <div class="flex justify-between"><span>الخدمة:</span> <span id="rService" class="text-blue-600"></span></div>
-                    <div class="flex justify-between"><span>السعر:</span> <span id="rPrice" class="eng-num"></span></div>
-                    <div class="flex justify-between text-[10px] text-slate-500"><span>ينتهي في:</span> <span id="rEnd" class="eng-num"></span></div>
-                    <div class="flex justify-between py-2 border-y border-slate-100">
-                        <span>الحالة:</span> 
-                        <span id="rStatusText" class="px-3 py-0.5 rounded-full text-[10px] text-white"></span>
-                    </div>
+                
+                <div class="space-y-3 text-right border-y border-slate-100 py-6 mb-6">
+                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الزبون:</span> <span class="font-bold text-sm" id="rName"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الإيميل:</span> <span class="font-bold text-[10px]" id="rEmail"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الخدمة:</span> <span class="font-bold text-blue-600 text-sm" id="rService"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 text-xs">ينتهي في:</span> <span class="font-bold text-sm" id="rEnd"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400 text-xs">حالة الدفع:</span> <span class="font-black text-xs uppercase" id="rStatusText"></span></div>
                 </div>
-                <div class="mt-4 flex items-center justify-center gap-1 text-[10px] font-black opacity-80 eng-num">
-                    <svg class="w-3 h-3 text-pink-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    INSTAGRAM: SUBSTOR100
+
+                <div class="flex items-center justify-center gap-2 bg-slate-50 p-3 rounded-2xl">
+                    <svg class="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.607-1.308 1.266-.058 1.646-.07 4.85-.07zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.668-.072-4.948-.197-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    <span class="text-[10px] font-black tracking-tighter text-slate-700">INSTAGRAM: substor100</span>
                 </div>
             </div>
-            <div class="grid grid-cols-1 gap-2 mt-4">
-                <button onclick="shareReceiptImage()" class="bg-blue-600 text-white p-4 rounded-xl font-bold text-xs shadow-lg">حفظ صورة الوصل</button>
-                <button onclick="el('receiptModal').classList.add('hidden')" class="bg-slate-800 text-white p-3 rounded-xl font-bold text-xs">إغلاق</button>
+            
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                <button onclick="shareReceiptImage()" class="bg-blue-600 text-white p-3 rounded-2xl font-bold text-xs uppercase">📤 مشاركة صورة</button>
+                <button onclick="shareReceiptText()" class="bg-green-600 text-white p-3 rounded-2xl font-bold text-xs uppercase">💬 مشاركة نص</button>
+                <button onclick="downloadReceipt()" class="col-span-2 bg-slate-800 text-white p-3 rounded-2xl text-[10px] font-bold">💾 حفظ في الاستوديو</button>
+                <button onclick="el('receiptModal').classList.add('hidden')" class="col-span-2 text-slate-500 mt-2 text-[10px] font-black">إغلاق</button>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = "SUBSTOR100_V5_2";
+        const STORAGE_KEY = "SUBSTOR100_PRO_V5_STABLE";
         let clients = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let selectedService = "";
-        let selectedPaid = false;
+        let selectedPaid = null;
         let editIndex = null;
 
         const el = (id) => document.getElementById(id);
@@ -148,76 +143,103 @@
         }
 
         function setService(btn, val) {
-            document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
-            btn.classList.add('bg-blue-600', 'text-white');
+            document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('btn-selected'));
+            btn.classList.add('btn-selected');
             selectedService = val;
-            el('customService').classList.add('hidden');
+            toggleCustomService(false);
         }
 
-        function toggleCustomService() {
-            el('customService').classList.toggle('hidden');
-            selectedService = "CUSTOM";
-        }
-
-        function setPaid(status) {
-            selectedPaid = status;
-            el('btnPaidMain').textContent = status ? "مدفوع ✅" : "غير مدفوع ❌";
-            el('btnPaidMain').className = status ? "bg-green-600 p-3 rounded-xl text-xs text-white font-bold" : "bg-red-600 p-3 rounded-xl text-xs text-white font-bold";
-        }
-
-        function calcEndDate(days) {
+        function calcEndDate(btn, days) {
+            document.querySelectorAll('#durationGrid button').forEach(b => b.classList.remove('btn-selected'));
+            btn.classList.add('btn-selected');
             const date = new Date();
             date.setDate(date.getDate() + days);
             el('expDate').value = date.toISOString().split('T')[0];
         }
 
-        function saveClient() {
-            const data = {
-                name: el('name').value.trim(),
-                phone: el('phone').value.trim(),
-                price: parseFloat(el('price').value) || 0,
-                insta: el('insta').value.trim(),
-                service: selectedService === "CUSTOM" ? el('customService').value : selectedService,
-                paid: selectedPaid,
-                end: el('expDate').value
-            };
-            if (!data.name || !data.service) return alert("يرجى إكمال البيانات");
-            if (editIndex !== null) clients[editIndex] = data;
-            else clients.unshift(data);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-            location.reload();
+        function toggleCustomService(show) {
+            el('customService').classList.toggle('hidden', !show);
+            if(show) {
+                document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('btn-selected'));
+                el('otherBtn').classList.add('btn-selected');
+                selectedService = "CUSTOM";
+            }
         }
 
-        function toggleQuickPaid(i) {
-            clients[i].paid = !clients[i].paid;
+        function setPaid(status) {
+            selectedPaid = status;
+            el('btnPaid').classList.remove('btn-active-paid');
+            el('btnUnpaid').classList.remove('btn-active-unpaid');
+            
+            if(status === true) el('btnPaid').classList.add('btn-active-paid');
+            else el('btnUnpaid').classList.add('btn-active-unpaid');
+        }
+
+        function saveClient() {
+            const name = el('name').value.trim();
+            const email = el('email').value.trim();
+            const phone = el('phone').value.trim();
+            const insta = el('insta').value.trim().replace('@', '');
+            const link = el('link').value.trim();
+            const notes = el('notes').value.trim();
+            const expDate = el('expDate').value;
+            const finalService = selectedService === "CUSTOM" ? el('customService').value : selectedService;
+
+            if (!name || !finalService || !expDate || selectedPaid === null) {
+                alert("⚠️ يرجى تعبئة: الاسم، الخدمة، التاريخ، وحالة الدفع.");
+                return;
+            }
+
+            const data = { name, email, phone, insta, link, notes, service: finalService, paid: selectedPaid, end: expDate };
+            if (editIndex !== null) clients[editIndex] = data;
+            else clients.unshift(data);
+
             localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-            render();
+            clearForm();
+            checkExpirations();
+            showTab('list');
+        }
+
+        function clearForm() {
+            el('name').value = el('email').value = el('phone').value = el('insta').value = el('link').value = el('notes').value = el('expDate').value = el('customService').value = "";
+            selectedService = ""; selectedPaid = null; editIndex = null;
+            document.querySelectorAll('.btn-selected, .btn-active-paid, .btn-active-unpaid').forEach(b => {
+                b.classList.remove('btn-selected', 'btn-active-paid', 'btn-active-unpaid');
+            });
+            el('mainBtn').textContent = "💾 حفظ بيانات الزبون";
+            toggleCustomService(false);
         }
 
         function render() {
             const q = el('search').value.toLowerCase();
             const list = el('clientsList');
             list.innerHTML = "";
+            const now = new Date().toISOString().split('T')[0];
+
             clients.forEach((c, i) => {
-                if (c.name.toLowerCase().includes(q) || c.phone.includes(q)) {
+                if (c.name.toLowerCase().includes(q) || c.phone.includes(q) || (c.email && c.email.toLowerCase().includes(q))) {
+                    const isExp = c.end < now;
                     list.innerHTML += `
-                        <div class="glass-card p-5 rounded-[1.5rem] border-r-4 ${c.paid ? 'border-green-500' : 'border-red-500'}">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-black text-lg">${c.name}</h3>
-                                    <p class="text-[10px] text-blue-400 font-bold eng-num">${c.service} • ${c.price.toLocaleString()}</p>
+                        <div class="glass-card p-5 rounded-3xl border-l-4 ${isExp ? 'border-red-600' : 'border-blue-500'} relative">
+                            <div class="flex justify-between items-start">
+                                <div class="max-w-[70%]">
+                                    <h3 class="font-black text-lg text-white truncate">${c.name}</h3>
+                                    <p class="text-[10px] text-slate-400 mb-1 truncate">${c.email || 'بدون إيميل'}</p>
+                                    <span class="text-[9px] bg-blue-600/20 text-blue-400 px-2 py-1 rounded-md font-bold uppercase">${c.service}</span>
                                 </div>
-                                <button onclick="toggleQuickPaid(${i})" class="px-3 py-1.5 rounded-full text-[10px] font-black eng-num transition-colors ${c.paid ? 'bg-green-600/20 text-green-500' : 'bg-red-600/20 text-red-500'}">
-                                    ${c.paid ? 'PAID ✅' : 'UNPAID ❌'}
-                                </button>
+                                <div class="flex gap-2">
+                                    ${c.insta ? `<a href="https://www.instagram.com/${c.insta}" target="_blank" class="text-xl">📸</a>` : ''}
+                                    <button onclick="deleteClient(${i})" class="text-red-500 text-lg">🗑️</button>
+                                </div>
                             </div>
-                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-700/30">
-                                <button onclick="openReceipt(${i})" class="bg-white text-black font-black p-2 px-4 rounded-xl text-[10px]">وصل 📄</button>
-                                <button onclick="openInsta('${c.insta}')" class="p-2 px-3 bg-gradient-to-tr from-yellow-500 to-purple-600 rounded-xl text-white">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                </button>
+                            <div class="text-[11px] mt-4 space-y-1 opacity-60">
+                                <p>⌛ الانتهاء: ${c.end} | ${c.paid ? '✅ مدفوع' : '❌ لم يدفع بعد'}</p>
+                                ${c.notes ? `<p class="text-yellow-500 italic">📝 ${c.notes}</p>` : ''}
+                            </div>
+                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-700/50">
+                                <button onclick="openReceipt(${i})" class="bg-white text-black font-bold p-2 px-4 rounded-xl text-[10px]">وصل 📄</button>
                                 <button onclick="editClient(${i})" class="bg-slate-700 p-2 px-4 rounded-xl text-[10px]">تعديل</button>
-                                <button onclick="deleteClient(${i})" class="mr-auto text-red-500">🗑️</button>
+                                <a href="https://wa.me/964${c.phone}" target="_blank" class="mr-auto bg-green-600 p-2 px-4 rounded-xl text-[10px] font-bold">واتساب</a>
                             </div>
                         </div>
                     `;
@@ -225,65 +247,84 @@
             });
         }
 
-        function openInsta(user) {
-            if(user) window.open(`https://www.instagram.com/${user.replace('@','')}`, '_blank');
-            else alert("لا يوجد يوزر");
+        function checkExpirations() {
+            const now = new Date().toISOString().split('T')[0];
+            const hasExp = clients.some(c => c.end < now);
+            el('expiryAlert').classList.toggle('hidden', !hasExp);
         }
 
+        let currentR = null;
         function openReceipt(i) {
-            const c = clients[i];
-            const modal = el('printableReceipt');
-            el('rName').textContent = c.name;
-            el('rService').textContent = c.service;
-            el('rPrice').textContent = c.price.toLocaleString() + " IQD";
-            el('rEnd').textContent = c.end;
+            currentR = clients[i];
+            el('rName').textContent = currentR.name;
+            el('rEmail').textContent = currentR.email || "غير متوفر";
+            el('rService').textContent = currentR.service;
+            el('rEnd').textContent = currentR.end;
             
-            if (c.paid) {
-                modal.className = "receipt-paid p-8 rounded-[2.5rem] text-slate-900 text-right shadow-2xl";
-                el('rStatusText').textContent = "مـدفـوع IQD";
-                el('rStatusText').style.backgroundColor = "#22c55e";
+            const statusEl = el('rStatusText');
+            if(currentR.paid) {
+                statusEl.textContent = "مدفوع ✅";
+                statusEl.className = "text-green-600 font-black text-xs";
             } else {
-                modal.className = "receipt-unpaid p-8 rounded-[2.5rem] text-slate-900 text-right shadow-2xl";
-                el('rStatusText').textContent = "غـيـر مـدفـوع";
-                el('rStatusText').style.backgroundColor = "#ef4444";
+                statusEl.textContent = "لم يدفع بعد ❌";
+                statusEl.className = "text-red-600 font-black text-xs";
             }
+            
             el('receiptModal').classList.remove('hidden');
         }
 
-        function openStats() {
-            let p = 0, u = 0;
-            clients.forEach(c => c.paid ? p += c.price : u += c.price);
-            el('totalPaid').textContent = p.toLocaleString();
-            el('totalUnpaid').textContent = u.toLocaleString();
-            el('totalCount').textContent = clients.length;
-            el('statsModal').classList.remove('hidden');
+        async function shareReceiptImage() {
+            const canvas = await html2canvas(el('printableReceipt'), { scale: 3, useCORS: true });
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'substor100_Receipt.png', { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'وصل اشتراك substor100' });
+                } else {
+                    downloadReceipt();
+                }
+            });
+        }
+
+        function shareReceiptText() {
+            const statusStr = currentR.paid ? "مدفوع ✅" : "لم يدفع بعد ❌";
+            const emailStr = currentR.email ? `📧 الإيميل: ${currentR.email}\n` : "";
+            const txt = `📦 وصل اشتراك جديد\n------------------\n👤 الزبون: ${currentR.name}\n${emailStr}✨ الخدمة: ${currentR.service}\n⌛ ينتهي في: ${currentR.end}\n💰 الحالة: ${statusStr}\n------------------\nللمزيد تابعونا على انستغرام:\nhttps://www.instagram.com/substor100?igsh=MTg0MG11bGl5MXR1Yg==`;
+            navigator.share ? navigator.share({ text: txt }) : alert("تم نسخ النص");
+        }
+
+        async function downloadReceipt() {
+            const canvas = await html2canvas(el('printableReceipt'), { scale: 3 });
+            const a = document.createElement('a');
+            a.download = `substor100-${currentR.name}.png`;
+            a.href = canvas.toDataURL();
+            a.click();
         }
 
         function editClient(i) {
             editIndex = i;
             const c = clients[i];
-            el('name').value = c.name; el('price').value = c.price;
-            el('phone').value = c.phone; el('expDate').value = c.end; el('insta').value = c.insta;
-            setPaid(c.paid); showTab('add');
+            el('name').value = c.name; 
+            el('email').value = c.email || "";
+            el('phone').value = c.phone;
+            el('insta').value = c.insta; 
+            el('link').value = c.link;
+            el('notes').value = c.notes; 
+            el('expDate').value = c.end;
+            setPaid(c.paid);
+            el('mainBtn').textContent = "🔄 تحديث البيانات";
+            showTab('add');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteClient(i) {
-            if(confirm("حذف المشترك؟")) {
+            if(confirm("🗑️ هل أنت متأكد من حذف هذا المشترك نهائياً؟")) {
                 clients.splice(i, 1);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
                 render();
             }
         }
 
-        async function shareReceiptImage() {
-            const canvas = await html2canvas(el('printableReceipt'), { scale: 2 });
-            const link = document.createElement('a');
-            link.download = `Receipt_${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-        }
-
-        render();
+        checkExpirations();
     </script>
 </body>
 </html>
