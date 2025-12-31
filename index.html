@@ -2,150 +2,129 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>substor100 | الإدارة المالية V5.2</title>
+    <title>substor100 | الإدارة المالية V6.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .input-field { background: #1e293b; border: 1px solid #334155; transition: all 0.3s; color: white; }
-        .tab-active { border-bottom: 3px solid #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
-        .btn-active-paid { background-color: #16a34a !important; border-color: #22c55e !important; color: white !important; }
-        .btn-active-unpaid { background-color: #dc2626 !important; border-color: #ef4444 !important; color: white !important; }
-        .btn-choice { border: 1px solid #334155; transition: 0.2s; background: #0f172a; }
-        .btn-selected { background-color: #3b82f6 !important; color: white !important; }
-        /* أنيميشن بسيط */
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; perspective: 1000px; }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .glass-card:hover { transform: translateY(-5px) rotateX(2deg); shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .input-field { background: #1e293b; border: 1px solid #334155; transition: 0.3s; color: white; }
+        .input-field:focus { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+        .tab-active { border-bottom: 4px solid #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        
+        /* تصميم الوصل الديناميكي */
+        .receipt-paid { background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border: 2px solid #22c55e; }
+        .receipt-unpaid { background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); border: 2px solid #ef4444; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="text-slate-200">
+<body class="text-slate-200 pb-10">
 
-    <div id="expiryAlert" class="hidden bg-red-600 text-white p-2 text-center text-xs font-bold sticky top-0 z-50 animate-pulse">
-        ⚠️ تنبيه: توجد اشتراكات منتهية!
-    </div>
-
-    <nav class="flex bg-slate-800 border-b border-slate-700 sticky top-0 z-40">
-        <button onclick="showTab('add')" id="tabAdd" class="flex-1 p-4 font-bold tab-active text-xs">➕ إضافة</button>
-        <button onclick="showTab('list')" id="tabList" class="flex-1 p-4 font-bold text-xs">🔍 المشتركين</button>
+    <nav class="flex bg-slate-900/90 backdrop-blur-md border-b border-slate-700 sticky top-0 z-40">
+        <button onclick="showTab('add')" id="tabAdd" class="flex-1 p-4 font-bold tab-active text-xs transition-all">➕ إضافة</button>
+        <button onclick="showTab('list')" id="tabList" class="flex-1 p-4 font-bold text-xs transition-all">🔍 المشتركين</button>
         <button onclick="openStats()" class="flex-1 p-4 font-bold text-xs text-yellow-400">📊 الإحصائيات</button>
     </nav>
 
     <div class="p-4 max-w-2xl mx-auto">
-
         <div id="viewAdd" class="space-y-4 fade-in">
-            <div class="glass-card p-6 rounded-3xl space-y-4 shadow-2xl">
+            <div class="glass-card p-6 rounded-[2.5rem] space-y-4 shadow-2xl">
+                <h2 class="text-center font-black text-blue-400 text-xl mb-2">إضافة مشترك جديد</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input id="name" class="input-field p-3 rounded-xl w-full" placeholder="اسم الزبون">
-                    <input id="email" type="email" class="input-field p-3 rounded-xl w-full" placeholder="البريد الإلكتروني">
+                    <input id="name" class="input-field p-4 rounded-2xl w-full" placeholder="اسم الزبون">
+                    <input id="email" type="email" class="input-field p-4 rounded-2xl w-full" placeholder="البريد الإلكتروني">
                 </div>
-                
                 <div class="flex gap-2">
-                    <span class="bg-slate-700 p-3 rounded-xl text-slate-400 text-sm flex items-center font-bold">964+</span>
-                    <input id="phone" type="tel" class="input-field p-3 rounded-xl w-full font-mono" placeholder="77XXXXXXXX">
+                    <span class="bg-slate-700 p-4 rounded-2xl text-slate-400 text-sm flex items-center font-bold">964+</span>
+                    <input id="phone" type="tel" class="input-field p-4 rounded-2xl w-full font-mono" placeholder="77XXXXXXXX">
                 </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] text-slate-400 uppercase">نوع الخدمة:</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="servicesGrid">
-                        <button onclick="setService(this, 'Canva Pro')" class="btn-choice p-2 rounded-xl text-xs">Canva Pro</button>
-                        <button onclick="setService(this, 'ChatGPT')" class="btn-choice p-2 rounded-xl text-xs">ChatGPT</button>
-                        <button onclick="setService(this, 'CapCut')" class="btn-choice p-2 rounded-xl text-xs">CapCut</button>
-                        <button onclick="setService(this, 'Gemini')" class="btn-choice p-2 rounded-xl text-xs">Gemini</button>
-                        <button onclick="toggleCustomService(true)" id="otherBtn" class="btn-choice p-2 rounded-xl text-xs">أخرى +</button>
-                    </div>
-                    <input id="customService" class="hidden input-field p-3 rounded-xl w-full mt-2" placeholder="اسم الخدمة...">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="servicesGrid">
+                    <button onclick="setService(this, 'Canva Pro')" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700">Canva Pro</button>
+                    <button onclick="setService(this, 'ChatGPT')" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700">ChatGPT</button>
+                    <button onclick="setService(this, 'CapCut')" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700">CapCut</button>
+                    <button onclick="toggleCustomService()" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700">أخرى +</button>
                 </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] text-slate-400 uppercase">سعر الاشتراك (د.ع):</label>
-                    <input id="price" type="number" class="input-field p-3 rounded-xl w-full font-bold text-blue-400" placeholder="0.00">
-                </div>
-
-                <div class="space-y-2 border-t border-slate-700/50 pt-3">
-                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="durationGrid">
-                        <button onclick="calcEndDate(this, 7)" class="btn-choice p-2 rounded-lg text-[10px]">أسبوع</button>
-                        <button onclick="calcEndDate(this, 30)" class="btn-choice p-2 rounded-lg text-[10px]">شهر</button>
-                        <button onclick="calcEndDate(this, 90)" class="btn-choice p-2 rounded-lg text-[10px]">3 أشهر</button>
-                        <button onclick="calcEndDate(this, 365)" class="btn-choice p-2 rounded-lg text-[10px]">سنة</button>
-                    </div>
-                    <input type="date" id="expDate" class="input-field p-3 rounded-xl w-full mt-2 text-sm">
-                </div>
-
+                <input id="customService" class="hidden input-field p-4 rounded-2xl w-full" placeholder="اسم الخدمة...">
+                <input id="price" type="number" class="input-field p-4 rounded-2xl w-full font-bold text-blue-400" placeholder="سعر الاشتراك (د.ع)">
+                <input type="date" id="expDate" class="input-field p-4 rounded-2xl w-full text-sm">
                 <div class="grid grid-cols-2 gap-2">
                     <input id="insta" class="input-field p-3 rounded-xl w-full text-xs" placeholder="يوزر انستغرام">
-                    <input id="link" class="input-field p-3 rounded-xl w-full text-xs" placeholder="رابط الحساب">
+                    <button id="btnPaidMain" class="bg-slate-800 p-3 rounded-xl text-xs border border-slate-700 font-bold" onclick="setPaid(!selectedPaid)">تحديد الحالة ❌</button>
                 </div>
-
-                <div class="flex gap-2">
-                    <button id="btnPaid" class="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700 text-sm font-bold" onclick="setPaid(true)">✅ مدفوع</button>
-                    <button id="btnUnpaid" class="flex-1 bg-slate-800 p-3 rounded-xl border border-slate-700 text-sm font-bold" onclick="setPaid(false)">❌ غير مدفوع</button>
-                </div>
-
-                <button id="mainBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all" onclick="saveClient()">💾 حفظ البيانات</button>
+                <button id="mainBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-[1.5rem] shadow-lg transition-all transform active:scale-95" onclick="saveClient()">💾 حفظ البيانات</button>
             </div>
         </div>
 
         <div id="viewList" class="hidden space-y-4 fade-in">
-            <input id="search" oninput="render()" class="input-field p-4 rounded-2xl w-full shadow-lg" placeholder="🔍 بحث عن زبون...">
-            <div id="clientsList" class="space-y-4 pb-10"></div>
+            <input id="search" oninput="render()" class="input-field p-5 rounded-[1.5rem] w-full shadow-2xl" placeholder="🔍 ابحث بالاسم أو الهاتف...">
+            <div id="clientsList" class="space-y-4 pb-20"></div>
         </div>
     </div>
 
-    <div id="statsModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-6 fade-in">
-        <div class="glass-card w-full max-w-sm p-8 rounded-[2.5rem] border-blue-500/30 text-center">
+    <div id="statsModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-6 backdrop-blur-xl">
+        <div class="glass-card w-full max-sm p-8 rounded-[3rem] text-center">
             <h2 class="text-2xl font-black mb-6 text-blue-400">📊 التقرير المالي</h2>
             <div class="space-y-4 text-right">
-                <div class="bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
-                    <p class="text-xs text-green-400">إجمالي المبالغ المستلمة (المدفوعة)</p>
+                <div class="bg-green-500/10 p-5 rounded-2xl border border-green-500/20">
+                    <p class="text-[10px] text-green-400 font-bold uppercase">المدفوعات المستلمة</p>
                     <h3 id="totalPaid" class="text-2xl font-black text-white">0</h3>
                 </div>
-                <div class="bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
-                    <p class="text-xs text-red-400">مبالغ قيد الانتظار (غير مدفوعة)</p>
+                <div class="bg-red-500/10 p-5 rounded-2xl border border-red-500/20">
+                    <p class="text-[10px] text-red-400 font-bold uppercase">الديون المنتظرة</p>
                     <h3 id="totalUnpaid" class="text-2xl font-black text-white">0</h3>
                 </div>
-                <div class="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/20">
-                    <p class="text-xs text-blue-400">العدد الكلي للمشتركين</p>
+                <div class="bg-blue-500/10 p-5 rounded-2xl border border-blue-500/20">
+                    <p class="text-[10px] text-blue-400 font-bold uppercase">إجمالي المشتركين</p>
                     <h3 id="totalCount" class="text-2xl font-black text-white">0</h3>
                 </div>
             </div>
-            <button onclick="el('statsModal').classList.add('hidden')" class="mt-8 w-full bg-slate-700 p-3 rounded-xl font-bold">إغلاق</button>
+            <button onclick="el('statsModal').classList.add('hidden')" class="mt-8 w-full bg-slate-700 p-4 rounded-2xl font-bold">إغلاق</button>
         </div>
     </div>
 
     <div id="receiptModal" class="fixed inset-0 bg-black/95 hidden z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-xs">
-            <div id="printableReceipt" class="bg-white p-6 rounded-[2.5rem] text-slate-900 shadow-2xl text-right">
+            <div id="printableReceipt" class="p-8 rounded-[3rem] text-slate-900 text-right shadow-2xl transition-all">
                 <div class="text-center mb-6 border-b pb-4">
                     <h3 class="text-3xl font-black text-blue-600 tracking-tighter">substor100</h3>
-                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Digital Solutions</p>
                 </div>
-                <div class="space-y-3 py-4">
-                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الزبون:</span> <span class="font-bold" id="rName"></span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الخدمة:</span> <span class="font-bold text-blue-600" id="rService"></span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 text-xs">السعر:</span> <span class="font-black" id="rPrice"></span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 text-xs">ينتهي في:</span> <span class="font-bold" id="rEnd"></span></div>
-                    <div class="flex justify-between"><span class="text-slate-400 text-xs">الحالة:</span> <span class="font-black text-xs" id="rStatusText"></span></div>
+                <div class="space-y-4 py-2 font-bold text-sm">
+                    <div class="flex justify-between items-center"><span>الزبون:</span> <span id="rName"></span></div>
+                    <div class="flex justify-between items-center"><span>الخدمة:</span> <span id="rService" class="text-blue-600 bg-blue-50 px-2 rounded-lg"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-xs text-slate-500">السعر:</span> <span id="rPrice" class="text-lg"></span></div>
+                    <div class="flex justify-between items-center text-[10px] text-slate-500"><span>ينتهي في:</span> <span id="rEnd"></span></div>
+                    <div class="flex justify-between py-2 border-y border-slate-100 items-center">
+                        <span>الحالة:</span> 
+                        <span id="rStatusText" class="px-4 py-1 rounded-full text-[10px] text-white font-black"></span>
+                    </div>
                 </div>
-                <div class="bg-slate-50 p-3 rounded-xl text-center text-[10px] font-bold">
-                    IG: substor100
+                <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-black opacity-70">
+                    📸 INSTAGRAM: substor100
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-2 mt-4">
-                <button onclick="shareReceiptImage()" class="bg-blue-600 text-white p-3 rounded-xl font-bold text-xs">📤 صورة</button>
-                <button onclick="shareReceiptText()" class="bg-green-600 text-white p-3 rounded-xl font-bold text-xs">💬 نص</button>
-                <button onclick="el('receiptModal').classList.add('hidden')" class="col-span-2 text-slate-500 text-xs py-2">إغلاق</button>
+                <button onclick="shareReceiptImage()" class="bg-blue-600 text-white p-4 rounded-2xl font-bold text-xs">حفظ صورة</button>
+                <button onclick="el('receiptModal').classList.add('hidden')" class="bg-slate-800 text-white p-4 rounded-2xl font-bold text-xs">إغلاق</button>
             </div>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY = "SUBSTOR100_V5_2";
+        const STORAGE_KEY = "SUBSTOR100_V5_2"; // الحفاظ على مفتاح البيانات القديمة
         let clients = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let selectedService = "";
-        let selectedPaid = null;
+        let selectedPaid = false;
         let editIndex = null;
 
         const el = (id) => document.getElementById(id);
@@ -159,80 +138,68 @@
         }
 
         function setService(btn, val) {
-            document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('btn-selected'));
-            btn.classList.add('btn-selected');
+            document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
+            btn.classList.add('bg-blue-600', 'text-white');
             selectedService = val;
             el('customService').classList.add('hidden');
         }
 
-        function toggleCustomService(show) {
-            el('customService').classList.remove('hidden');
-            document.querySelectorAll('#servicesGrid button').forEach(b => b.classList.remove('btn-selected'));
-            el('otherBtn').classList.add('btn-selected');
+        function toggleCustomService() {
+            el('customService').classList.toggle('hidden');
             selectedService = "CUSTOM";
-        }
-
-        function calcEndDate(btn, days) {
-            document.querySelectorAll('#durationGrid button').forEach(b => b.classList.remove('btn-selected'));
-            btn.classList.add('btn-selected');
-            const date = new Date();
-            date.setDate(date.getDate() + days);
-            el('expDate').value = date.toISOString().split('T')[0];
         }
 
         function setPaid(status) {
             selectedPaid = status;
-            el('btnPaid').classList.toggle('btn-active-paid', status === true);
-            el('btnUnpaid').classList.toggle('btn-active-unpaid', status === false);
+            el('btnPaidMain').textContent = status ? "مدفوع ✅" : "غير مدفوع ❌";
+            el('btnPaidMain').className = status ? "bg-green-600 p-3 rounded-xl text-xs text-white font-bold" : "bg-red-600 p-3 rounded-xl text-xs text-white font-bold";
         }
 
         function saveClient() {
             const data = {
                 name: el('name').value.trim(),
-                email: el('email').value.trim(),
                 phone: el('phone').value.trim(),
                 price: parseFloat(el('price').value) || 0,
-                insta: el('insta').value.trim().replace('@', ''),
+                insta: el('insta').value.trim().replace('@',''),
                 service: selectedService === "CUSTOM" ? el('customService').value : selectedService,
                 paid: selectedPaid,
                 end: el('expDate').value
             };
-
-            if (!data.name || !data.service || !data.end || selectedPaid === null) {
-                alert("⚠️ أكمل البيانات المطلوبة أولاً");
-                return;
-            }
-
+            if (!data.name || !data.service || !data.end) return alert("اكمل البيانات الأساسية");
             if (editIndex !== null) clients[editIndex] = data;
             else clients.unshift(data);
-
             localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-            location.reload(); // لتحديث كل شيء بسلاسة
+            location.reload();
+        }
+
+        function toggleQuickPaid(i) {
+            clients[i].paid = !clients[i].paid;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
+            render();
         }
 
         function render() {
             const q = el('search').value.toLowerCase();
             const list = el('clientsList');
             list.innerHTML = "";
-
             clients.forEach((c, i) => {
                 if (c.name.toLowerCase().includes(q) || c.phone.includes(q)) {
                     list.innerHTML += `
-                        <div class="glass-card p-5 rounded-3xl border-l-4 ${c.paid ? 'border-green-500' : 'border-red-500'}">
-                            <div class="flex justify-between items-start">
+                        <div class="glass-card p-5 rounded-[2rem] border-r-4 ${c.paid ? 'border-green-500' : 'border-red-500'} fade-in">
+                            <div class="flex justify-between items-center">
                                 <div>
                                     <h3 class="font-black text-lg">${c.name}</h3>
-                                    <p class="text-xs text-blue-400 font-bold">${c.service} | ${c.price.toLocaleString()} د.ع</p>
+                                    <p class="text-[10px] text-blue-400 font-bold">${c.service} • ${c.price.toLocaleString()} د.ع</p>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button onclick="shareToInsta(${i})" class="text-xl">📸</button>
-                                    <button onclick="deleteClient(${i})" class="text-red-500">🗑️</button>
-                                </div>
+                                <button onclick="toggleQuickPaid(${i})" class="px-4 py-2 rounded-full text-[10px] font-black transition-all ${c.paid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}">
+                                    ${c.paid ? 'مدفوع ✅' : 'غير مدفوع ❌'}
+                                </button>
                             </div>
-                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-700/50">
-                                <button onclick="openReceipt(${i})" class="bg-white text-black font-bold p-2 px-4 rounded-xl text-[10px]">وصل 📄</button>
+                            <div class="flex gap-2 mt-5 pt-4 border-t border-slate-700/30">
+                                <button onclick="openReceipt(${i})" class="bg-white text-black font-black p-2 px-5 rounded-xl text-[10px] shadow-lg">عرض الوصل 📄</button>
+                                <button onclick="shareToInsta(${i})" class="p-2 px-3 bg-gradient-to-tr from-yellow-400 to-purple-600 rounded-xl text-white text-xs shadow-lg">📸</button>
                                 <button onclick="editClient(${i})" class="bg-slate-700 p-2 px-4 rounded-xl text-[10px]">تعديل</button>
-                                <button onclick="shareToWhatsApp(${i})" class="mr-auto bg-green-600 p-2 px-4 rounded-xl text-[10px] font-bold">واتساب 💬</button>
+                                <button onclick="deleteClient(${i})" class="mr-auto text-red-500 text-xs">🗑️</button>
                             </div>
                         </div>
                     `;
@@ -240,88 +207,62 @@
             });
         }
 
-        // دالة إنشاء نص الوصل الموحدة
-        function generateReceiptText(client) {
-            const status = client.paid ? "مدفوع ✅" : "لم يدفع بعد ❌";
-            return `📦 وصل اشتراك من substor100\n------------------\n👤 الزبون: ${client.name}\n✨ الخدمة: ${client.service}\n💰 السعر: ${client.price.toLocaleString()} د.ع\n⌛ ينتهي في: ${client.end}\nالحالة: ${status}\n------------------\nشكراً لثقتكم بنا 🖤\nانستغرام: substor100`;
-        }
-
-        // مشاركة واتساب
-        function shareToWhatsApp(i) {
-            const c = clients[i];
-            const text = encodeURIComponent(generateReceiptText(c));
-            window.open(`https://wa.me/964${c.phone}?text=${text}`, '_blank');
-        }
-
-        // مشاركة انستغرام (نسخ النص ثم فتح الحساب)
-        function shareToInsta(i) {
-            const c = clients[i];
-            const text = generateReceiptText(c);
-            navigator.clipboard.writeText(text).then(() => {
-                alert("✅ تم نسخ معلومات الوصل! يمكنك الآن لصقها في رسائل الانستغرام.");
-                if (c.insta) window.open(`https://www.instagram.com/${c.insta}`, '_blank');
-            });
-        }
-
-        // حساب الإحصائيات
-        function openStats() {
-            let paidSum = 0;
-            let unpaidSum = 0;
-            clients.forEach(c => {
-                if (c.paid) paidSum += c.price;
-                else unpaidSum += c.price;
-            });
-            el('totalPaid').textContent = paidSum.toLocaleString() + " د.ع";
-            el('totalUnpaid').textContent = unpaidSum.toLocaleString() + " د.ع";
-            el('totalCount').textContent = clients.length;
-            el('statsModal').classList.remove('hidden');
-        }
-
         function openReceipt(i) {
             const c = clients[i];
+            const modal = el('printableReceipt');
             el('rName').textContent = c.name;
             el('rService').textContent = c.service;
             el('rPrice').textContent = c.price.toLocaleString() + " د.ع";
             el('rEnd').textContent = c.end;
-            el('rStatusText').textContent = c.paid ? "مدفوع ✅" : "غير مدفوع ❌";
+            if (c.paid) {
+                modal.className = "receipt-paid p-8 rounded-[3rem] text-slate-900 text-right shadow-2xl";
+                el('rStatusText').textContent = "مـدفـوع";
+                el('rStatusText').style.backgroundColor = "#16a34a";
+            } else {
+                modal.className = "receipt-unpaid p-8 rounded-[3rem] text-slate-900 text-right shadow-2xl";
+                el('rStatusText').textContent = "غـيـر مـدفـوع";
+                el('rStatusText').style.backgroundColor = "#dc2626";
+            }
             el('receiptModal').classList.remove('hidden');
-            currentR = c;
         }
 
-        let currentR = null;
-        async function shareReceiptImage() {
-            const canvas = await html2canvas(el('printableReceipt'), { scale: 3 });
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'receipt.png', { type: 'image/png' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'وصل اشتراك' });
-                }
-            });
+        function shareToInsta(i) {
+            const c = clients[i];
+            if(c.insta) window.open(`https://www.instagram.com/${c.insta}`, '_blank');
+            else alert("لا يوجد يوزر انستغرام مضاف");
         }
 
-        function shareReceiptText() {
-            const txt = generateReceiptText(currentR);
-            navigator.share ? navigator.share({ text: txt }) : alert("تم النسخ");
+        function openStats() {
+            let p = 0, u = 0;
+            clients.forEach(c => c.paid ? p += c.price : u += c.price);
+            el('totalPaid').textContent = p.toLocaleString() + " د.ع";
+            el('totalUnpaid').textContent = u.toLocaleString() + " د.ع";
+            el('totalCount').textContent = clients.length;
+            el('statsModal').classList.remove('hidden');
         }
 
         function editClient(i) {
             editIndex = i;
             const c = clients[i];
-            el('name').value = c.name;
-            el('price').value = c.price;
-            el('phone').value = c.phone;
-            el('expDate').value = c.end;
-            el('insta').value = c.insta;
-            setPaid(c.paid);
-            showTab('add');
+            el('name').value = c.name; el('price').value = c.price;
+            el('phone').value = c.phone; el('expDate').value = c.end; el('insta').value = c.insta;
+            setPaid(c.paid); showTab('add');
         }
 
         function deleteClient(i) {
-            if(confirm("حذف المشترك؟")) {
+            if(confirm("هل تريد حذف هذا المشترك؟")) {
                 clients.splice(i, 1);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
                 render();
             }
+        }
+
+        async function shareReceiptImage() {
+            const canvas = await html2canvas(el('printableReceipt'), { scale: 3 });
+            const link = document.createElement('a');
+            link.download = `substor100_receipt_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
         }
 
         render();
